@@ -20,13 +20,23 @@ rootdir       <- "~/diaf_aa_2000_2010_2014/"
 setwd(rootdir)
 rootdir <- paste0(getwd(),"/")
 
+dir.create(paste0(rootdir,"provinces/"),showWarnings = F)
+dir.create(paste0(rootdir,"process_2010_2014/"),showWarnings = F)
+scriptdir <- paste0(rootdir,"scripts/")
+
+######################################################################################################### 
+##################### PARTIE 0 : CHARGER LES DONNEES
+######################################################################################################### 
+
+
 
 ######################################################################################################### 
 ##################### PARTIE I : COMBINER LES CARTES POUR 2010-2014
 ######################################################################################################### 
 
 ##################### RASTERISER LE SHAPEFILE DES PROVINCES SUR LA CARTE JICA DIAF
-system(sprintf("oft-rasterize_attr.py -v %s -i %s -o %s  -a %s",
+system(sprintf("python %s/oft-rasterize_attr.py -v %s -i %s -o %s  -a %s",
+               scriptdir,
                paste0(rootdir,"provinces/RDC_Province_26.shp"),
                paste0(rootdir,"process_2010_2014/masque_NF_F_DEF_2010_2014_jica_diaf.tif"),
                paste0(rootdir,"provinces/rdc_provinces.tif"),
