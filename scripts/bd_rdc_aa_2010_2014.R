@@ -156,3 +156,14 @@ table(df$map_org_change,df$map_change)
 head(df)
 write.csv(df,paste0(datadir,"points_2010_2014_v20190207.csv"),row.names = F)
 
+##################### FICHIER AMELIE
+am <- read.csv(paste0(datadir,"2010_2014_prov_V3_final.csv"))
+table(df$map_org_change,am$RASTERVALU)
+head(am)
+
+df <- read.csv(paste0(datadir,"points_2010_2014_v20190207.csv"))
+out <- df[,c("operator","id","province","location_x","location_y","ce_change","map_org_change","ce_prov","map_prv_change")]
+names(out) <- c("operator","id","province","location_x","location_y","ce_change","map_change","ce_prov","map_prov")
+
+write.csv(out,paste0(datadir,"bd_2010_2014_v20190207.csv"),row.names = F)
+head(df)

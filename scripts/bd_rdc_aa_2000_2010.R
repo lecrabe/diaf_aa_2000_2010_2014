@@ -2,9 +2,57 @@
 ##################### PARTIE I : COMBINER LES CARTES POUR 2000-2010
 ######################################################################################################### 
 
-########## EXERCICE POUR AMELIE
+
+## Set the working directory
+rootdir       <- "~/diaf_aa_2000_2010_2014/"
+#rootdir <- "/media/dannunzio/OSDisk/Users/dannunzio/Documents/countries/congo_kinshasa/amelie/donnees_RDC_2000-2010-2014/"
 
 
+## Go to the root directory
+setwd(rootdir)
+rootdir <- paste0(getwd(),"/")
+
+scriptdir <- paste0(rootdir,"scripts/")
+
+datadir <- paste0(rootdir,"drc/")
+dir.create(datadir,showWarnings = F)
+setwd(datadir)
+######################################################################################################### 
+##################### PARTIE I : COMBINER LES CARTES POUR 2000-2010
+######################################################################################################### 
+
+##################### RASTERISER LE SHAPEFILE DES PROVINCES SUR LA CARTE JICA DIAF
+system(sprintf("python %s/oft-rasterize_attr.py -v %s -i %s -o %s  -a %s",
+               scriptdir,
+               paste0(datadir,"RDC_Province_26.shp"),
+               paste0(datadir,"masque_NF_F_DEF_2000_2010_diaf_jica.tif"),
+               paste0(datadir,"rdc_provinces.tif"),
+               "ID_SEPAL"
+))
+
+##################### PASSER LES PROVINCES EN 16Bit
+system(sprintf("gdal_translate -ot Int16 -co COMPRESS=LZW  %s %s",
+               paste0(datadir,"rdc_provinces.tif"),
+               paste0(datadir,"rdc_provinces_16b.tif")
+))
+
+##################### PASSER LA CARTE JICA DIAF EN 16Bit
+system(sprintf("gdal_translate -ot Int16 -co COMPRESS=LZW  %s %s",
+               paste0(datadir,"masque_NF_F_DEF_2000_2010_diaf_jica.tif"),
+               paste0(datadir,"diaf_0010_16b.tif")
+))
+
+##################### COMBINER LES DEUX CARTES
+system(sprintf("gdal_calc.py -A %s -B %s --type=Int16 --co=\"COMPRESS=LZW\" --outfile=%s --calc=\"%s\"",
+               paste0(datadir,"rdc_provinces_16b.tif"),
+               paste0(datadir,"diaf_0010_16b.tif"),
+               paste0(datadir,"diaf_2000_2010_provinces.tif"),
+               "A*10+B"
+))
+
+system(sprintf("rm %s",
+               (paste0(datadir,"diaf_0010_16b.tif"))
+))
 ######################################################################################################### 
 ##################### PARTIE II : EXPORTER LE FICHIER DE SUPERFICIES
 ######################################################################################################### 
@@ -46,19 +94,51 @@ write.csv(df3,"areas_2000_2010_national.csv",row.names = F)
 ######################################################################################################### 
 
 ##################### LIRE LES POINTS
-df <- read.csv(paste0(rootdir,"process_2000_2010/BD_2000_2010_nerf_et_renforcement_pr_sepal_sans_doublons.csv"))
+df <- read.csv(paste0(datadir,"BD_2000_2010_nerf_et_renforcement_pr_sepal_sans_doublons.csv"))
 df$province <- df$prov/10
 unique(df$province)
 
 df$ce_prov  <- as.numeric(paste0(df$province,df$ce_change))
 df$map_prov <- as.numeric(paste0(df$province,df$map_change))
 
+##################### TRANSFORMER LES POINTS EN FICHIER SPATIAL
+spdf_geo <- SpatialPointsDataFrame(
+  coords = df[,c("location_x","location_y")],
+  data   = df,
+  proj4string=CRS("+init=epsg:4326")
+)
+
+map_org <- paste0(datadir,"masque_NF_F_DEF_2000_2010_diaf_jica.tif")
+map_prv <- paste0(datadir,"diaf_2000_2010_provinces.tif")
+
+spdf <- spTransform(spdf_geo,proj4string(raster(map_prv)))
+
+##################### EXTRAIRE LES VALEURS DES POINTS
+spdf$map_org_change <- extract(raster(map_org),spdf)
+spdf$map_prv_change <- extract(raster(map_prv),spdf)
+
+spdf$check_change   <- substr(spdf$map_prv_change,nchar(spdf$map_prv_change),nchar(spdf$map_prv_change))
+
+table(spdf$map_org_change,spdf$check_change)
+table(spdf$map_org_change,spdf$map_change)
+
+df <- spdf@data
+
 ##################### CHECK DOUBLONS
 nrow(df) == length(unique(paste0(df$location_x,df$location_y)))
-
-table(df$map_prov,df$ce_prov)
-table(df$map_change,df$ce_change)
-
+names(df)
+table(df$map_prv_change,df$ce_prov)
+table(df$map_org_change,df$ce_change)
+table(df$map_org_change,df$map_change)
 head(df)
-write.csv(df,paste0(rootdir,"points_2000_2010_v20190206.csv"),row.names = F)
+write.csv(df,paste0(datadir,"points_2000_2010_v20190207.csv"),row.names = F)
 
+##################### FICHIER AMELIE
+am <- read.csv(paste0(datadir,"bd_extract_value_00_10_pr_sepal.csv"))
+table(df$map_org_change,am$RASTERVALU)
+head(am)
+
+out <- df[,c("operator","id","province","nom","location_x","location_y","ce_change","map_org_change","ce_prov","map_prv_change")]
+names(out) <- c("operator","id","province","nom","location_x","location_y","ce_change","map_change","ce_prov","map_prov")
+
+write.csv(out,paste0(datadir,"bd_2000_2010_v20190207.csv"),row.names = F)
