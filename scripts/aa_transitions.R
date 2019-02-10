@@ -108,7 +108,16 @@ saea <- function(df,the_ci){
   confusion
 }
 
+df <- df0[df0$map_transition == 23 
+                     | df0$map_transition == 31 
+                     | (df0$map_transition == 11 & df0$period=="p0010")
+                     | (df0$map_transition == 22 & df0$period=="p1014"),
+                       ]
+
 s<-saea(df0,0.9)
+
+s<-saea(df,0.9)
+
 s$transition <- substr(s$class,nchar(s$class)-1,nchar(s$class))
 s$province   <- as.numeric(substr(s$class,0,nchar(s$class)-2))
 

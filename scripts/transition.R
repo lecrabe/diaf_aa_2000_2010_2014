@@ -75,6 +75,7 @@ df2   <- merge(df1,codes,by.y="ID_SEPAL",by.x="province",all.x=T)
 df2   <- arrange(df2,class)[,c("class","NOM","province","pixel","transition","class0010","class1014","area_ha")]
 
 tapply(df2$area_ha,df2[,c("class0010","class1014","NOM")],sum)
+tapply(df2$area_ha,df2[,c("class0010","class1014")],sum)
 summary(df2$province)
 
 ##################### CREER UNE NOUVELLE CLASSE 2010-2014 NETTOYEE
