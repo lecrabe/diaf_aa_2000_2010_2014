@@ -20,7 +20,6 @@ legend <- unique(ar[,ar_code])
 areas <- data.frame(cbind(legend,tapply(ar[,ar_area],ar[,ar_code],sum)))
 names(areas) <- c("class","area")
 
-df <- df0
 saea <- function(df,the_ci){
   tmp <- table(df[,map_code],df[,ref_code])
   tmp[is.na(tmp)] <- 0
@@ -30,7 +29,7 @@ saea <- function(df,the_ci){
   for (i in 1:length(legend)) {
     tryCatch({
       #cat(paste(legend[i], "\n"))
-      matrix[, i] <- tmp[, i]
+      matrix[, i] <- tmp[, legend[i]]
     }, error = function(e) {
       cat("Not relevant\n")
     })
@@ -113,11 +112,9 @@ s<-saea(df0,0.9)
 s$transition <- substr(s$class,nchar(s$class)-1,nchar(s$class))
 s$province   <- as.numeric(substr(s$class,0,nchar(s$class)-2))
 
-head(s)
-
-
 codes <- read.dbf(paste0(datadir,"RDC_Province_26.dbf"))[,c("NOM","ID_SEPAL")]
 s1   <- merge(s,codes,by.y="ID_SEPAL",by.x="province",all.x=T)
+tapply(s1$strRS_area_estimate,s1[,c("transition")],sum)
 tapply(s1$strRS_area_estimate,s1[,c("NOM","transition")],sum)
 
 write.csv(s1,paste0(datadir,"resultats_transitions_20190210.csv"),row.names = F)
