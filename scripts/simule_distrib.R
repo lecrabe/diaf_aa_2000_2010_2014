@@ -1,22 +1,9 @@
-library(foreign)
-library(plyr)
-library(rgeos)
-library(rgdal)
-library(raster)
-library(ggplot2)
+####################################################################################
+####### Object:  SIMULATIONS AA         
+####### Author:  remi.dannunzio@fao.org                               
+####### Update:  2019/02/05                                    
+####################################################################################
 
-## Set the working directory
-rootdir       <- "~/diaf_aa_2000_2010_2014/"
-
-## Go to the root directory
-setwd(rootdir)
-rootdir <- paste0(getwd(),"/")
-
-scriptdir <- paste0(rootdir,"scripts/")
-
-datadir <- paste0(rootdir,"drc/")
-dir.create(datadir,showWarnings = F)
-setwd(datadir)
 
 df0 <- read.csv(paste0(datadir,"bd_2000_2010_v20190207.csv"))
 map_code <- "map_change"

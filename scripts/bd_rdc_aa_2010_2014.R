@@ -3,27 +3,6 @@
 ####### Author:  remi.dannunzio@fao.org                               
 ####### Update:  2019/02/05                                    
 ####################################################################################
-library(foreign)
-library(plyr)
-library(rgeos)
-library(rgdal)
-library(raster)
-library(ggplot2)
-
-
-## Set the working directory
-rootdir       <- "~/diaf_aa_2000_2010_2014/"
-#rootdir <- "/media/dannunzio/OSDisk/Users/dannunzio/Documents/countries/congo_kinshasa/amelie/donnees_RDC_2000-2010-2014/"
-
-
-## Go to the root directory
-setwd(rootdir)
-rootdir <- paste0(getwd(),"/")
-
-scriptdir <- paste0(rootdir,"scripts/")
-
-datadir <- paste0(rootdir,"drc/")
-dir.create(datadir,showWarnings = F)
 
 ######################################################################################################### 
 ##################### PARTIE I : COMBINER LES CARTES POUR 2010-2014
@@ -161,9 +140,14 @@ am <- read.csv(paste0(datadir,"2010_2014_prov_V3_final.csv"))
 table(df$map_org_change,am$RASTERVALU)
 head(am)
 
+##################### EXPORTER BDD FINALE
 df <- read.csv(paste0(datadir,"points_2010_2014_v20190207.csv"))
 out <- df[,c("operator","id","province","location_x","location_y","ce_change","map_org_change","ce_prov","map_prv_change")]
 names(out) <- c("operator","id","province","location_x","location_y","ce_change","map_change","ce_prov","map_prov")
 
-write.csv(out,paste0(datadir,"bd_2010_2014_v20190207.csv"),row.names = F)
+bd1014  <- merge(out,codes,by.y="ID_SEPAL",by.x="province",all.x=T)
+names(bd1014) <- c("province","operator","id","location_x","location_y","ce_change","map_change","ce_prov","map_prov","nom")
+bd1014 <- bd1014[,c("operator","id","province","nom","location_x","location_y","ce_change","map_change","ce_prov","map_prov")]
+write.csv(bd1014,paste0(datadir,"bd_2010_2014_v20190209.csv"),row.names=F)
+
 head(df)

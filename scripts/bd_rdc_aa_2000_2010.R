@@ -1,27 +1,7 @@
 ######################################################################################################### 
 ##################### PARTIE I : COMBINER LES CARTES POUR 2000-2010
 ######################################################################################################### 
-library(foreign)
-library(plyr)
-library(rgeos)
-library(rgdal)
-library(raster)
-library(ggplot2)
 
-## Set the working directory
-rootdir       <- "~/diaf_aa_2000_2010_2014/"
-#rootdir <- "/media/dannunzio/OSDisk/Users/dannunzio/Documents/countries/congo_kinshasa/amelie/donnees_RDC_2000-2010-2014/"
-
-
-## Go to the root directory
-setwd(rootdir)
-rootdir <- paste0(getwd(),"/")
-
-scriptdir <- paste0(rootdir,"scripts/")
-
-datadir <- paste0(rootdir,"drc/")
-dir.create(datadir,showWarnings = F)
-setwd(datadir)
 ######################################################################################################### 
 ##################### PARTIE I : COMBINER LES CARTES POUR 2000-2010
 ######################################################################################################### 
