@@ -24,3 +24,11 @@ scriptdir <- paste0(rootdir,"scripts/")
 
 datadir <- paste0(rootdir,"drc/")
 dir.create(datadir,showWarnings = F)
+
+provdir <- paste0(rootdir,"drc/provinces/")
+dir.create(provdir,showWarnings = F)
+
+imgdir <- paste0(rootdir,"img/")
+dir.create(imgdir,showWarnings = F)
+
+setwd(datadir)

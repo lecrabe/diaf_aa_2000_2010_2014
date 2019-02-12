@@ -6,8 +6,8 @@
 
 
 df0 <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190210.csv"))
-map_code <- "map_prov_transition"
-ref_code <- "ce_prov_transition"
+map_code <- "map_transition"
+ref_code <- "ce_transition"
 
 ar <- read.csv(paste0(datadir,"areas_transitions_2000_2010_2014.csv"))
 ar_code <- "reclass"
@@ -19,7 +19,7 @@ legend <- unique(ar[,ar_code])
 
 areas <- data.frame(cbind(legend,tapply(ar[,ar_area],ar[,ar_code],sum)))
 names(areas) <- c("class","area")
-
+df<-df0
 saea <- function(df,the_ci){
   tmp <- table(df[,map_code],df[,ref_code])
   tmp[is.na(tmp)] <- 0
@@ -29,7 +29,7 @@ saea <- function(df,the_ci){
   for (i in 1:length(legend)) {
     tryCatch({
       #cat(paste(legend[i], "\n"))
-      matrix[, i] <- tmp[, legend[i]]
+      matrix[, i] <- tmp[, i]
     }, error = function(e) {
       cat("Not relevant\n")
     })

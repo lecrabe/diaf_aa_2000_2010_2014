@@ -33,8 +33,19 @@ system(sprintf("gdal_calc.py -A %s -B %s -C %s --type=Int16 --co=\"COMPRESS=LZW\
                paste0(datadir,"rdc_provinces_16b.tif"),
                paste0(datadir,"diaf_0010_16b.tif"),
                paste0(datadir,"diaf_1014_16b.tif"),
-               paste0(datadir,"diaf_2000_2010_2014_provinces.tif"),
+               paste0(datadir,"tmp_diaf_2000_2010_2014_provinces.tif"),
                "A*100+B*10+C"
+))
+
+################################################################################
+#################### COMPRESSER LE RESULTAT
+system(sprintf("gdal_translate -ot Int16 -co COMPRESS=LZW %s %s",
+               paste0(datadir,"tmp_diaf_2000_2010_2014_provinces.tif"),
+               paste0(datadir,"diaf_2000_2010_2014_provinces.tif")
+))
+
+system(sprintf("rm %s",
+               paste0(datadir,"tmp_diaf_2000_2010_2014_provinces.tif")
 ))
 
 ##################### CALCULER LE COMPTAGE DE PIXEL
@@ -102,8 +113,9 @@ df2$transition_clean <- paste0(df2$class0010,df2$clean1014)
 
 write.csv(df2,paste0(datadir,"areas_transitions_2000_2010_2014.csv"),row.names = F)
 df2$reclass <- as.numeric(df2$reclass)
+df2$transition_clean <- as.numeric(df2$transition_clean)
 
-write.table(df2[,c("class","reclass")],
+write.table(df2[,c("class","reclass","transition_clean")],
             paste0(datadir,"reclass.txt"),
             row.names = F,col.names = F)
 
@@ -127,6 +139,56 @@ system(sprintf("rm %s",
                paste0(datadir,"tmp_diaf_2000_2010_2014_provinces_clean.tif")
                ))
 
+################################################################################
+#################### RECLASSIFIER 
+system(sprintf("(echo %s; echo 1; echo 1; echo 3; echo 0) | oft-reclass  -oi %s  -um %s %s",
+               paste0(datadir,"reclass.txt"),
+               paste0(datadir,"tmp_diaf_2000_2010_2014_clean.tif"),
+               paste0(datadir,"diaf_2000_2010_2014_provinces.tif"),
+               paste0(datadir,"diaf_2000_2010_2014_provinces.tif")
+))
+
+################################################################################
+#################### COMPRESSER LE RESULTAT
+system(sprintf("gdal_translate -ot Byte -co COMPRESS=LZW %s %s",
+               paste0(datadir,"tmp_diaf_2000_2010_2014_clean.tif"),
+               paste0(datadir,"tmp_byte_diaf_2000_2010_2014_clean.tif")
+))
+
+
+#################### CREATE A COLOR TABLE FOR THE OUTPUT MAP
+my_classes <- c(0,11,22,23,31)
+my_colors  <- col2rgb(c("black","grey","darkgreen","red","orange"))
+
+pct <- data.frame(cbind(my_classes,
+                        my_colors[1,],
+                        my_colors[2,],
+                        my_colors[3,]))
+
+write.table(pct,paste0(datadir,"color_table.txt"),row.names = F,col.names = F,quote = F)
+
+
+################################################################################
+#################### Add pseudo color table to result
+################################################################################
+system(sprintf("(echo %s) | oft-addpct.py %s %s",
+               paste0(datadir,"color_table.txt"),
+               paste0(datadir,"tmp_byte_diaf_2000_2010_2014_clean.tif"),
+               paste0(datadir,"tmp_byte_pct_diaf_2000_2010_2014_clean.tif")
+))
+
+################################################################################
+#################### COMPRESS
+################################################################################
+system(sprintf("gdal_translate -ot Byte -co COMPRESS=LZW %s %s",
+               paste0(datadir,"tmp_byte_pct_diaf_2000_2010_2014_clean.tif"),
+               paste0(datadir,"diaf_2000_2010_2014_clean.tif")
+))
+
+
+system(sprintf("rm %s",
+               paste0(datadir,"tmp_*.tif")
+))
 
 ##################### CALCULER LE COMPTAGE DE PIXEL
 system(sprintf("oft-stat %s %s %s",
