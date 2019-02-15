@@ -22,13 +22,22 @@ rootdir <- paste0(getwd(),"/")
 
 scriptdir <- paste0(rootdir,"scripts/")
 
-datadir <- paste0(rootdir,"drc/")
+datadir <- paste0(rootdir,"data/")
 dir.create(datadir,showWarnings = F)
 
-provdir <- paste0(rootdir,"drc/provinces/")
+provdir <- paste0(rootdir,"data/provinces/")
 dir.create(provdir,showWarnings = F)
 
 imgdir <- paste0(rootdir,"img/")
 dir.create(imgdir,showWarnings = F)
+
+occ0010dir <- paste0(datadir,"occ_sols_2000_2010/")
+occ1014dir <- paste0(datadir,"occ_sols_2010_2014/")
+
+dir.create(occ0010dir,showWarnings = F)
+dir.create(occ1014dir,showWarnings = F)
+
+drvdir <- paste0(datadir,"resultats_drivers/")
+dir.create(drvdir,showWarnings = F)
 
 setwd(datadir)
