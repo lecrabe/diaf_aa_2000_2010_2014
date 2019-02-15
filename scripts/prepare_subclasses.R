@@ -121,8 +121,9 @@ d$dbl_inter <- duplicated(paste0(d$loc,d$period))
 
 table(d$dbl_inter,d$dbl_intra)
 
-d1 <- d[!(d$loc %in% paste0(bd$location_x,bd$location_y)),]
 bd <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190210.csv"))
+d1 <- d[!(d$loc %in% paste0(bd$location_x,bd$location_y)),]
+
 bd$loc <- paste0(bd$location_x,bd$location_y)
 table(d$loc %in% paste0(bd$location_x,bd$location_y))
 length(unique(d$unique_id))
