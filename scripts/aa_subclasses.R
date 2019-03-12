@@ -9,13 +9,22 @@ df0 <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190215.csv"))
 map_code <- "map_transition"      #"map_prov_transition"
 ref_code <- "ce_transition"       #"ce_prov_transition"
 
+df0$tertiary_land_cover_label <- gsub(pattern = "Forest Dry or Sparse",
+                                      replacement = "Forest, Dry or Sparse",
+                                      df0$tertiary_land_cover_label )
+
+df0$tertiary_land_cover_label <- gsub(pattern = "Forest Dense Humid",
+                                      replacement = "Forest, Dense, Humid",
+                                      df0$tertiary_land_cover_label )
+
+
 ar <- read.csv(paste0(datadir,"areas_transitions_2000_2010_2014.csv"))
 ar_code <- "transition_clean"
 ar_area <- "area_ha"
 
 ar <- ar[ar$transition_clean != 00 & !is.na(ar$province),]
 
-province <- "Tshuapa"
+province <- "Sud-Ubangi"
 
 for(province in c("Mai-Ndombe","Kwilu","Kwango","Equateur","Sud-Ubangi",
                   "Nord-Ubangi","Mongala","Tshuapa","Tshopo","Bas-Uele","Haut-Uele","Ituri")){
@@ -39,13 +48,13 @@ for(province in c("Mai-Ndombe","Kwilu","Kwango","Equateur","Sud-Ubangi",
   
   s<-saea(df,0.9,areas,legend)
   
-  subc <- table(df[df$ce_transition == 31 & df$periode == "p0010",]$primary_land_cover_label,
+  subc <- table(df[df$ce_transition == 31 & df$periode == "p0010",]$tertiary_land_cover_label,
                 df[df$ce_transition == 31 & df$periode == "p0010",]$secondary_land_cover1_label)
   
   loss0010 <- as.data.frame.matrix(subc/sum(subc)*s[4,"strRS_area_estimate"])
   ci0010   <- as.data.frame.matrix(subc/sum(subc)*s[4,"strRS_confidence_interval"])
   
-  subc <- table(df[df$ce_transition == 23 & df$periode == "p1014",]$primary_land_cover_label,
+  subc <- table(df[df$ce_transition == 23 & df$periode == "p1014",]$tertiary_land_cover_label,
                 df[df$ce_transition == 23 & df$periode == "p1014",]$secondary_land_cover1_label)
   
   loss1014 <- as.data.frame.matrix(subc/sum(subc)*s[3,"strRS_area_estimate"])
