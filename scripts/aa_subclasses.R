@@ -26,8 +26,8 @@ ar <- ar[ar$transition_clean != 00 & !is.na(ar$province),]
 
 province <- "Sud-Ubangi"
 
-for(province in c("Mai-Ndombe","Kwilu","Kwango","Equateur","Sud-Ubangi",
-                  "Nord-Ubangi","Mongala","Tshuapa","Tshopo","Bas-Uele","Haut-Uele","Ituri")){
+for(province in unique(ar$NOM)){
+  #  c("Mai-Ndombe","Kwilu","Kwango","Equateur","Sud-Ubangi","Nord-Ubangi","Mongala","Tshuapa","Tshopo","Bas-Uele","Haut-Uele","Ituri")){
   
   legend <- unique(ar[ar$NOM == province,ar_code])
   
