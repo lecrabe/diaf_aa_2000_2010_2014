@@ -139,7 +139,7 @@ bd$nchar_loc <- nchar(bd$loc)
 hist(bd$nchar_loc,add=T,col="blue")
 
 bd$id <- row(bd)[,1]
-length(unique(df$cause_id))
+#length(unique(df$cause_id))
 
 spdf_d <- SpatialPointsDataFrame(
   coords = d[,c("location_x","location_y")],
