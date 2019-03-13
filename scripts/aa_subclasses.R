@@ -26,6 +26,15 @@ ar <- ar[ar$transition_clean != 00 & !is.na(ar$province),]
 
 province <- "Sud-Ubangi"
 
+df0$tertiary_filled <- df0$tertiary_land_cover_label
+nrow(df0[is.na(df0$tertiary_filled),])
+
+df0[df0$tertiary_filled == "" | is.na(df0$tertiary_filled),]$tertiary_filled <- df0[df0$tertiary_filled == "" | is.na(df0$tertiary_filled),]$secondary_land_cover_label
+df0[df0$tertiary_filled == "" | is.na(df0$tertiary_filled),]$tertiary_filled <- df0[df0$tertiary_filled == "" | is.na(df0$tertiary_filled),]$primary_land_cover_label
+
+table(df0$tertiary_filled,df0$tertiary_land_cover_label)
+head(df0[df0$tertiary_filled == "",])
+
 for(province in unique(ar$NOM)){
   #  c("Mai-Ndombe","Kwilu","Kwango","Equateur","Sud-Ubangi","Nord-Ubangi","Mongala","Tshuapa","Tshopo","Bas-Uele","Haut-Uele","Ituri")){
   
@@ -48,13 +57,13 @@ for(province in unique(ar$NOM)){
   
   s<-saea(df,0.9,areas,legend)
   
-  subc <- table(df[df$ce_transition == 31 & df$periode == "p0010",]$tertiary_land_cover_label,
+  subc <- table(df[df$ce_transition == 31 & df$periode == "p0010",]$tertiary_filled,
                 df[df$ce_transition == 31 & df$periode == "p0010",]$secondary_land_cover1_label)
   
   loss0010 <- as.data.frame.matrix(subc/sum(subc)*s[4,"strRS_area_estimate"])
   ci0010   <- as.data.frame.matrix(subc/sum(subc)*s[4,"strRS_confidence_interval"])
   
-  subc <- table(df[df$ce_transition == 23 & df$periode == "p1014",]$tertiary_land_cover_label,
+  subc <- table(df[df$ce_transition == 23 & df$periode == "p1014",]$tertiary_filled,
                 df[df$ce_transition == 23 & df$periode == "p1014",]$secondary_land_cover1_label)
   
   loss1014 <- as.data.frame.matrix(subc/sum(subc)*s[3,"strRS_area_estimate"])
@@ -67,6 +76,6 @@ for(province in unique(ar$NOM)){
   names(prov1014) <- c(paste0("area_",names(loss1014)),paste0("ci_",names(ci1014)))
   
   write.csv2(prov0010,paste0(drvdir,province,"_0010.csv"),sep = ";")
-  write.csv2(prov1014,paste0(drvdir,province,"_1014.csv"),sep=";")
+  write.csv2(prov1014,paste0(drvdir,province,"_1014.csv"),sep = ";")
   
 }
