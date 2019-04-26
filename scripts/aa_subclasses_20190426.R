@@ -76,7 +76,7 @@ for(province in unique(ar$NOM)){
   prov1014 <- cbind(loss1014,ci1014)
   names(prov1014) <- c(paste0("area_",names(loss1014)),paste0("ci_",names(ci1014)))
   
-  write.csv(prov0010,paste0(drvdir,province,"_0010.csv"))
-  write.csv(prov1014,paste0(drvdir,province,"_1014.csv"))
+  write.csv2(prov0010,paste0(drvdir,province,"_0010.csv"))
+  write.csv2(prov1014,paste0(drvdir,province,"_1014.csv"))
   
 }
