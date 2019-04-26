@@ -6,6 +6,12 @@
 
 ##### LIRE LES DEUX BASES (POINTS ET SUPERFICIES)
 bd <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190426.csv"))
+
+##### PRENDRE TOUS LES POINTS DES TRANSITIONS STABLES
+bd[bd$ce_change == 1,]$ce_transition <- 11
+bd[bd$ce_change == 2,]$ce_transition <- 22
+bd$ce_prov_transition <- paste0(bd$map_province,bd$ce_transition)
+
 ar <- read.csv(paste0(datadir,"areas_transitions_2000_2010_2014.csv"))
 
 table(bd$ce_transition,bd$count)
@@ -57,8 +63,8 @@ tapply(s1$strRS_area_estimate,s1[,c("province_name","transition")],sum)
 df     <- df0
 matrix <- table(df[,map_code],df[,ref_code])
 
-write.csv(matrix,paste0(datadir,"matrix_provinces_20190426.csv"))
-write.csv(s1,paste0(datadir,"resultats_provinces_20190426.csv"),row.names = F)
+write.csv(matrix,paste0(datadir,"matrix_provinces_",nrow(df0),"_20190426.csv"))
+write.csv(s1,paste0(datadir,"resultats_provinces_",nrow(df0),"_20190426.csv"),row.names = F)
 
 # write.csv(matrix,paste0(datadir,"matrix_national_20190426.csv"))
 # write.csv(s,paste0(datadir,"resultats_national_20190426.csv"),row.names = F)

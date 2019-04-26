@@ -4,7 +4,13 @@
 ####### Author:  remi.dannunzio@fao.org                               
 ####### Update:  2019/02/15                                    
 ####################################################################################
-saea <- function(df,the_ci,areas,legend,map_code,ref_code){
+saea <- function(my_df,the_ci,my_areas,my_legend,my_map_code,my_ref_code){
+  df <- my_df
+  areas <- my_areas
+  legend <- my_legend
+  map_code <- my_map_code
+  ref_code <- my_ref_code
+  
   tmp <- table(df[,map_code],df[,ref_code])
   tmp[is.na(tmp)] <- 0
   
