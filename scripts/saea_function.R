@@ -11,17 +11,21 @@ saea <- function(my_df,the_ci,my_areas,my_legend,my_map_code,my_ref_code){
   map_code <- my_map_code
   ref_code <- my_ref_code
   
+  ref_legend <- as.numeric(levels(as.factor(df[,ref_code])))
+  
   tmp <- table(df[,map_code],df[,ref_code])
   tmp[is.na(tmp)] <- 0
-  
+
   matrix <- matrix(0, nrow = length(legend), ncol = length(legend))
   
   for (i in 1:length(legend)) {
     tryCatch({
       #cat(paste(legend[i], "\n"))
-      matrix[, i] <- tmp[, i]
+      
+      matrix[, i] <- tmp[, which(colnames(tmp) == row.names(tmp)[i])]
+      
     }, error = function(e) {
-      cat("Not relevant\n")
+      cat(paste0(legend[i]," not collected \n"))
     })
   }
   
@@ -60,7 +64,7 @@ saea <- function(my_df,the_ci,my_areas,my_legend,my_map_code,my_ref_code){
   
   matrix_se[is.na(matrix_se)] <- 0
   
-  confusion <- data.frame(matrix(nrow = length(legend), ncol = 10))
+  confusion <- data.frame(matrix(0,nrow = length(legend), ncol = 10))
   names(confusion) <-
     c(
       "class",
@@ -84,7 +88,8 @@ saea <- function(my_df,the_ci,my_areas,my_legend,my_map_code,my_ref_code){
   
   ### Integration of all elements into one dataframe
   for (i in 1:length(legend)) {
-    confusion[i, ]$class <- areas[areas[, "class"] == legend[i], "class"]
+    tryCatch({
+      confusion[i, ]$class <- areas[areas[, "class"] == legend[i], "class"]
     confusion[i, ]$code  <- areas[areas[, "class"] == legend[i], "class"]
     confusion[i, ]$strRS_area_estimate <- sum(matrix_w[, i]) * sum(areas[,"area"])
     confusion[i, ]$producers_accuracy  <- matrix[i, i] / sum(matrix[, i])
@@ -94,6 +99,7 @@ saea <- function(my_df,the_ci,my_areas,my_legend,my_map_code,my_ref_code){
     confusion[i, ]$strRS_standard_error           <-  sqrt(sum(matrix_se[, i])) * sum(areas[,"area"])
     confusion[i, ]$strRS_confidence_interval      <-  confusion[i, ]$strRS_standard_error * civalue
     confusion[i, ]$number_samples                 <-  sum(matrix[,i])
+    }, error=function(e){cat(paste0(legend[i]," tried \n"))})
   }
   confusion
 }
