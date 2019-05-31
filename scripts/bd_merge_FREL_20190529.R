@@ -4,8 +4,8 @@
 ####### Update:  2019/02/05                                    
 ####################################################################################
 
-nerf1014 <- read.csv(paste0(datadir,"2010_2014_prov_V3_final.csv"))
 nerf0010 <- read.csv(paste0(datadir,"database_2000_2010_avc_bandunduu.csv"))
+nerf1014 <- read.csv(paste0(datadir,"2010_2014_prov_V3_final.csv"))
 
 head(nerf0010)
 head(nerf1014)
@@ -13,6 +13,9 @@ head(nerf1014)
 ##### LIRE LA BDD
 df0 <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190426.csv"))
 
+nerf0010$unique_id <- paste0("id_0010_",row(nerf0010)[,1])
+nerf1014$unique_id <- paste0("id_1014_",row(nerf1014)[,1])
+df0$unique_id <- paste0("id_bdd_",row(df0)[,1])
 
 ##### SPATIALISER LES POINTS
 spdf <- SpatialPointsDataFrame(
@@ -41,14 +44,40 @@ buffer1014    <- SpatialPolygonsDataFrame(buffer(spdf_n1014,0.1,dissolve=F),spdf
 
 
 ##### INTERSECTION BUFFER BDD AVEC POINTS NERF
-test0010  <- over(spdf,buffer0010)
-test1014  <- over(spdf,buffer1014)
+all_0010  <- aggregate(x = spdf["unique_id"],by = buffer0010,FUN = length)
+all_1014  <- aggregate(x = spdf["unique_id"],by = buffer1014,FUN = length)
 
-df0$bdd0010 <- !is.na(test0010$id)
-df0$bdd1014 <- !is.na(test1014$id)
+doublon_0010  <- aggregate(x = spdf_n0010["unique_id"],by = buffer0010,FUN = length)
+doublon_1014  <- aggregate(x = spdf_n1014["unique_id"],by = buffer1014,FUN = length)
 
+nerf0010$self_count <- doublon_0010@data$unique_id
+nerf1014$self_count <- doublon_1014@data$unique_id
+
+nerf0010$all_count <- all_0010@data$unique_id
+nerf1014$all_count <- all_1014@data$unique_id
+
+table(nerf0010$all_count,nerf0010$self_count)
+table(nerf1014$all_count,nerf1014$self_count)
+
+table(nerf0010$self_count)
+table(nerf1014$self_count)
+
+over0010    <- over(spdf,buffer0010)
+over1014    <- over(spdf,buffer1014)
+
+df0$bdd0010 <- !is.na(over0010$id)
+df0$bdd1014 <- !is.na(over1014$id)
+
+dfd <- df0[df0$count > 1 ,]
+df1 <- df0[df0$count == 1 ,]
 table(df0$bdd0010,df0$bdd1014,df0$count)
+table(df0$bdd0010,df0$bdd1014)
+table(dfd$bdd0010,dfd$bdd1014)
+table(df1$bdd0010,df1$bdd1014)
+table(df0$bdd0010,df0$count)
+table(df0$bdd1014,df0$count,df0$bdd0010)
 
+nrow(nerf1014[nerf1014$all_count >1,])
 ##### INTERSECTION BUFFER BDD AVEC POINTS NERF 2010-2014
 test1014      <- over(buf,spdf_n1014)
 table(test$prov,useNA = "always")
