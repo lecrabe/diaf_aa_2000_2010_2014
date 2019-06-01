@@ -27,7 +27,7 @@ ar <- read.csv(paste0(datadir,"areas_transitions_2000_2010_2014.csv"))
 ar$cls_cl <- paste0(ar$province,ar$clean1014)
 
 ##### SELECTIONNER SEULEMENT LES SINGLETS
-df0 <- bd[bd$count ==1 & bd$periode == '2010_2014',]
+df0 <- bd[bd$count ==1 & bd$periode == '2010_2014' & bd$bdd1014 == F,]
 
 ##### NIVEAU NATIONAL
 # map_code <- "map_transition"
@@ -69,7 +69,7 @@ names(codes) <- c("province_name","ID_SEPAL")
 
 s1   <- merge(s,codes,by.y="ID_SEPAL",by.x="province",all.x=T)
 
-tapply(s1$strRS_area_estimate,s1[,c("class_code")],sum)
+r22 <- tapply(s1$strRS_area_estimate,s1[,c("class_code")],sum)
 tapply(s1$map_pixel_count,s1[,c("class_code")],sum)
 
 # tapply(s1$strRS_area_estimate,s1[,c("province_name","class_code")],sum)

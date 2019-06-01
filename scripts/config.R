@@ -37,7 +37,7 @@ occ1014dir <- paste0(datadir,"occ_sols_2010_2014/")
 dir.create(occ0010dir,showWarnings = F)
 dir.create(occ1014dir,showWarnings = F)
 
-drvdir <- paste0(datadir,"resultats_drivers_20190428/")
+drvdir <- paste0(datadir,"resultats_drivers_20190601/")
 dir.create(drvdir,showWarnings = F)
 
 setwd(datadir)

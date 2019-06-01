@@ -64,8 +64,8 @@ names(codes) <- c("province_name","ID_SEPAL")
 
 s1   <- merge(s,codes,by.y="ID_SEPAL",by.x="province",all.x=T)
 
-tapply(s1$strRS_area_estimate,s1[,c("class_code")],sum)
-tapply(s1$map_pixel_count,s1[,c("class_code")],sum)
+n2 <- tapply(s1$strRS_area_estimate,s1[,c("class_code")],sum)
+c2 <- tapply(s1$map_pixel_count,s1[,c("class_code")],sum)
 
 # tapply(s1$strRS_area_estimate,s1[,c("province_name","class_code")],sum)
 # tapply(s1$map_pixel_count,s1[,c("province_name","class_code")],sum)
