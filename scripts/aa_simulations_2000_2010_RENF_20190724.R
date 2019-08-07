@@ -115,7 +115,7 @@ names(areas) <- c("class","area")
 resultat <- data.frame(matrix(ncol=6,nrow=0))
 names(resultat) <- c("area_NF","area_F","area_DEF","ci_NF","ci_F","ci_DEF")
 
-for(simulation in 1:10){
+for(simulation in 1:30){
   print(simulation)
   
   ids <- list()
@@ -143,7 +143,7 @@ for(simulation in 1:10){
   c1  <- tapply(s1$map_pixel_count,s1[,c("class_code")],sum)
   resultat <- rbind(resultat,c(r1,i1))
 }
-
+names(resultat) <- c("area_NF","area_F","area_DEF","ci_NF","ci_F","ci_DEF")
 resultat
 
 write.csv(resultat,paste0(datadir,"res_sim_2000_2010.csv"),row.names = F)
