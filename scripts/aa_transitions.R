@@ -5,7 +5,8 @@
 ####################################################################################
 
 
-df0 <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190215.csv"))
+setwd   <- "~/diaf_aa_2000_2010_2014/data"
+df0 <- read.csv(paste0(datadir,"bd_2000_2010_2014_v20190210.csv"))
 map_code <- "map_transition"      #"map_prov_transition"
 ref_code <- "ce_transition"       #"ce_prov_transition"
 
